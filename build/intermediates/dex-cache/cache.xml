@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\huzefaasger\Desktop\Huzefa Softwares\android-sdk_r24.3.3-windows\android-sdk-windows\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="C:\Users\huzefaasger\Downloads\Android-Hand-Drawing-master\Android-Hand-Drawing-master\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-c7ec0d4267e142c01442da5166703217612f0072.jar" />
+    </item>
+    <item
+        jar="C:\Users\huzefaasger\Downloads\Android-Hand-Drawing-master\Android-Hand-Drawing-master\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\jars\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="C:\Users\huzefaasger\Downloads\Android-Hand-Drawing-master\Android-Hand-Drawing-master\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-e278f338ece1dcad8efae1c55cba0a2c43a56398.jar" />
+    </item>
+    <item
+        jar="C:\Users\huzefaasger\Downloads\Android-Hand-Drawing-master\Android-Hand-Drawing-master\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="C:\Users\huzefaasger\Downloads\Android-Hand-Drawing-master\Android-Hand-Drawing-master\app\build\intermediates\pre-dexed\debug\classes-e90855d020d63f2dd705acd030fb08002087f1ba.jar" />
+    </item>
+
+</items>
