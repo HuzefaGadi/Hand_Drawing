@@ -6,12 +6,29 @@
     android:orientation="vertical"
     android:padding="0dp">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        >
+
+        <ImageView
+            android:layout_marginTop="20dp"
+            android:id="@+id/toplogo"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:adjustViewBounds="true"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/toplogo" />
+
+    </RelativeLayout>
+
     <com.saiflimited.drawing.DrawingView
         android:id="@+id/drawing"
         android:layout_width="match_parent"
-        android:background="#FFFFFF"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="#FFFFFF">
 
     </com.saiflimited.drawing.DrawingView>
 
@@ -24,17 +41,26 @@
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/brushsize">
+            android:layout_toLeftOf="@+id/brushLayout">
 
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/brushsize"
+        <RelativeLayout
+            android:id="@+id/brushLayout"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentRight="true"
-            android:text="1" />
+            android:gravity="center_horizontal|center_vertical">
+
+            <ImageView
+                android:id="@+id/brushsize"
+                android:layout_width="2dp"
+                android:layout_height="2dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
 
 
     </RelativeLayout>

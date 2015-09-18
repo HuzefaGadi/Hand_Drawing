@@ -31,10 +31,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -46,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity implements OnClickListener {
+public class MainActivity extends Activity implements OnClickListener {
 
     private final String tag = "MainActivity";
     int currentApiVersion;
@@ -64,14 +63,17 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
     public static String CURRENT_BRUSH_COLOR;
     List<String> listOfColors;
     List<Integer> listOfBrushes;
+
     int countForBrush = 0;
     int countForColor = 0;
     RelativeLayout layoutForColor;
-    TextView layoutForSize;
+    ImageView layoutForSize;
     boolean flag = false;
     SimpleDateFormat format;
     boolean flag2 = false;
     int countOfClicks = 0;
+    Bitmap canvasBitmap;
+    ImageView topLogo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,19 +83,21 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
+
         if (savedInstanceState == null) {
 
             listOfColors = new ArrayList<String>();
-            listOfColors.add("#010101");
-            listOfColors.add("#110101");
-            listOfColors.add("#012101");
-            listOfColors.add("#0144FF");
-            listOfColors.add("#FF0101");
-            listOfColors.add("#01FF01");
-            listOfColors.add("#FF0100");
-            listOfColors.add("#0101FF");
-            listOfColors.add("#039901");
-            listOfColors.add("#0FF101");
+            listOfColors.add("#000000");
+            listOfColors.add("#999999");
+            listOfColors.add("#ffffff");
+            listOfColors.add("#0000dc");
+            listOfColors.add("#4d136a");
+            listOfColors.add("#da0000");
+            listOfColors.add("#fc7300");
+            listOfColors.add("#ffeb2c");
+            listOfColors.add("#238e24");
+            listOfColors.add("#53301a");
 
             listOfBrushes = new ArrayList<Integer>();
             listOfBrushes.add(2);
@@ -101,6 +105,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
             listOfBrushes.add(6);
             listOfBrushes.add(8);
             listOfBrushes.add(10);
+            listOfBrushes.add(15);
+            listOfBrushes.add(30);
+
+
 
             CURRENT_BRUSH_COLOR = listOfColors.get(countForColor);
             CURRENT_BRUSH_SIZE = listOfBrushes.get(countForBrush);
@@ -151,7 +159,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 
             localLayoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-            localLayoutParams.height = (int) (50 * getResources()
+            localLayoutParams.height = (int) (30 * getResources()
                     .getDisplayMetrics().scaledDensity);
             localLayoutParams.format = PixelFormat.TRANSPARENT;
 
@@ -185,11 +193,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
             format = new SimpleDateFormat("MMddyyyyHHmmss");
             layoutForColor = (RelativeLayout) findViewById(R.id.brushcolor);
             layoutForColor.setBackgroundColor(Color.parseColor(CURRENT_BRUSH_COLOR));
-            layoutForSize = (TextView) findViewById(R.id.brushsize);
-            layoutForSize.setText(CURRENT_BRUSH_SIZE + "");
+            layoutForSize = (ImageView) findViewById(R.id.brushsize);
+            int size = listOfBrushes.get(countForBrush)+5;
+            layoutForSize.setImageDrawable(getResources().getDrawable(R.drawable.circle));
+            layoutForSize.setLayoutParams(new RelativeLayout.LayoutParams(size,size));
 
-
-            layoutForSize.setOnClickListener(new View.OnClickListener() {
+            topLogo = (ImageView)findViewById(R.id.toplogo);
+            topLogo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -233,8 +243,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
             eraser = (ImageView) findViewById(R.id.eraser);
             eraser.setOnClickListener(this);
 
-        }
+            canvasBitmap = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888);
 
+        }
 
 
     }
@@ -394,14 +405,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
                     drawingView.setBackground(null);
                     return true;
                 }
-                if (action == KeyEvent.ACTION_UP) {
+              if (action == KeyEvent.ACTION_UP && event.isLongPress()) {
                     volumeUp();
                 }
                 return true;
-            case KeyEvent.KEYCODE_POWER:
-                finish();
-                return true;
-
             default:
                 return super.dispatchKeyEvent(event);
         }
@@ -443,13 +450,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 
             return true;
         }
-        if (keyCode == KeyEvent.KEYCODE_POWER) {
-            // Do something here...
 
-            event.startTracking();
-            finish();// Needed to track long presses
-            return true;
-        }
 
         return super.onKeyDown(keyCode, event);
     }
@@ -490,7 +491,10 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
         }
         CURRENT_BRUSH_SIZE = listOfBrushes.get(countForBrush);
         // drawingView.onCanvasInitialization();
-        layoutForSize.setText(CURRENT_BRUSH_SIZE + "");
+        int size = listOfBrushes.get(countForBrush)+5;
+        layoutForSize.setImageDrawable(getResources().getDrawable(R.drawable.circle));
+        layoutForSize.setLayoutParams(new RelativeLayout.LayoutParams(size, size));
+       // layoutForSize.setImageDrawable(getResources().getDrawable(listOfBrushImages.get(countForBrush)));
 
     }
 
@@ -550,12 +554,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        if (!exit)
-        {
+        if (!exit) {
             startActivity(getIntent().addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-        }
-        else
-        {
+        } else {
 
         }
 
