@@ -74,15 +74,15 @@ public class MainActivity extends Activity implements OnClickListener {
     int countOfClicks = 0;
     Bitmap canvasBitmap;
     ImageView topLogo;
+    boolean longPress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        System.out.println("On Create called");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
 
 
         if (savedInstanceState == null) {
@@ -109,7 +109,6 @@ public class MainActivity extends Activity implements OnClickListener {
             listOfBrushes.add(30);
 
 
-
             CURRENT_BRUSH_COLOR = listOfColors.get(countForColor);
             CURRENT_BRUSH_SIZE = listOfBrushes.get(countForBrush);
             setContentView(R.layout.activity_main);
@@ -117,7 +116,7 @@ public class MainActivity extends Activity implements OnClickListener {
             exit = false;
             currentApiVersion = android.os.Build.VERSION.SDK_INT;
 
-            final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            /*final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -133,17 +132,16 @@ public class MainActivity extends Activity implements OnClickListener {
                 // Without this, after pressing volume buttons, the navigation bar will
                 // show up and won't hide
                 final View decorView = getWindow().getDecorView();
-                decorView
-                        .setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
 
-                            @Override
-                            public void onSystemUiVisibilityChange(int visibility) {
-                                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                                    decorView.setSystemUiVisibility(flags);
-                                }
-                            }
-                        });
-            }
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            decorView.setSystemUiVisibility(flags);
+                        }
+                    }
+                });
+            }*/
             WindowManager manager = ((WindowManager) getApplicationContext()
                     .getSystemService(Context.WINDOW_SERVICE));
 
@@ -183,7 +181,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
             customViewGroup viewForRight = new customViewGroup(this);
 
-            manager.addView(view, localLayoutParams);
+              manager.addView(view, localLayoutParams);
             //manager.addView(viewForRight,localLayoutParamsForRightSide);
 
             KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Activity.KEYGUARD_SERVICE);
@@ -194,11 +192,11 @@ public class MainActivity extends Activity implements OnClickListener {
             layoutForColor = (RelativeLayout) findViewById(R.id.brushcolor);
             layoutForColor.setBackgroundColor(Color.parseColor(CURRENT_BRUSH_COLOR));
             layoutForSize = (ImageView) findViewById(R.id.brushsize);
-            int size = listOfBrushes.get(countForBrush)+5;
+            int size = listOfBrushes.get(countForBrush) + 5;
             layoutForSize.setImageDrawable(getResources().getDrawable(R.drawable.circle));
-            layoutForSize.setLayoutParams(new RelativeLayout.LayoutParams(size,size));
+            layoutForSize.setLayoutParams(new RelativeLayout.LayoutParams(size, size));
 
-            topLogo = (ImageView)findViewById(R.id.toplogo);
+            topLogo = (ImageView) findViewById(R.id.toplogo);
             topLogo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -225,23 +223,6 @@ public class MainActivity extends Activity implements OnClickListener {
             });
             drawingView = (DrawingView) findViewById(R.id.drawing);
 
-            btnChooseImage = (Button) findViewById(R.id.btnChooseImage);
-            btnChooseImage.setOnClickListener(this);
-
-            btnClear = (ImageButton) findViewById(R.id.btnClear);
-            btnClear.setOnClickListener(this);
-
-            btnSave = (ImageButton) findViewById(R.id.btnSave);
-            btnSave.setOnClickListener(this);
-
-            btnShare = (ImageButton) findViewById(R.id.btnShare);
-            btnShare.setOnClickListener(this);
-
-            btnCamera = (ImageButton) findViewById(R.id.btnCamera);
-            btnCamera.setOnClickListener(this);
-
-            eraser = (ImageView) findViewById(R.id.eraser);
-            eraser.setOnClickListener(this);
 
             canvasBitmap = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888);
 
@@ -351,48 +332,6 @@ public class MainActivity extends Activity implements OnClickListener {
         context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-
-        switch (requestCode) {
-
-            case SELECT_PHOTO:
-                if (resultCode == RESULT_OK) {
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    InputStream imageStream = null;
-                    try {
-                        imageStream = getContentResolver().openInputStream(selectedImage);
-                        Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-
-                        BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
-
-                        if (Build.VERSION.SDK_INT >= 16) {
-                            drawingView.setBackground(ob);
-                        } else {
-                            drawingView.setBackgroundDrawable(ob);
-                        }
-
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            case CAMERA_REQUEST:
-                if (resultCode == RESULT_OK) {
-
-                    Bitmap photo = (Bitmap) imageReturnedIntent.getExtras().get("data");
-
-                    BitmapDrawable ob = new BitmapDrawable(getResources(), photo);
-
-                    if (Build.VERSION.SDK_INT >= 16) {
-                        drawingView.setBackground(ob);
-                    } else {
-                        drawingView.setBackgroundDrawable(ob);
-                    }
-                }
-        }
-    }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -403,11 +342,13 @@ public class MainActivity extends Activity implements OnClickListener {
                 if (action == KeyEvent.ACTION_DOWN && event.isLongPress()) {
                     drawingView.reset();
                     drawingView.setBackground(null);
+                    longPress = true;
                     return true;
                 }
-              if (action == KeyEvent.ACTION_UP && event.isLongPress()) {
+                if (action == KeyEvent.ACTION_UP && !event.isLongPress()) {
                     volumeUp();
                 }
+
                 return true;
             default:
                 return super.dispatchKeyEvent(event);
@@ -423,15 +364,12 @@ public class MainActivity extends Activity implements OnClickListener {
             Log.d("Test", "Long press!");
             flag = false;
             flag2 = true;
+
             saveImage();
             return true;
         }
 
-        if (keyCode == KeyEvent.KEYCODE_POWER) {
-            // Do something here...
-            finish();
-            return true;
-        }
+
         return super.onKeyLongPress(keyCode, event);
     }
 
@@ -475,13 +413,20 @@ public class MainActivity extends Activity implements OnClickListener {
 
 
     public void volumeUp() {
-        countForColor++;
-        if (countForColor >= listOfColors.size()) {
-            countForColor = 0;
+
+        if (longPress) {
+            longPress = false;
+        } else {
+            countForColor++;
+            if (countForColor >= listOfColors.size()) {
+                countForColor = 0;
+            }
+            CURRENT_BRUSH_COLOR = listOfColors.get(countForColor);
+            //drawingView.onCanvasInitialization();
+            layoutForColor.setBackgroundColor(Color.parseColor(CURRENT_BRUSH_COLOR));
+            longPress = false;
         }
-        CURRENT_BRUSH_COLOR = listOfColors.get(countForColor);
-        //drawingView.onCanvasInitialization();
-        layoutForColor.setBackgroundColor(Color.parseColor(CURRENT_BRUSH_COLOR));
+
     }
 
     public void volumeDown() {
@@ -491,10 +436,10 @@ public class MainActivity extends Activity implements OnClickListener {
         }
         CURRENT_BRUSH_SIZE = listOfBrushes.get(countForBrush);
         // drawingView.onCanvasInitialization();
-        int size = listOfBrushes.get(countForBrush)+5;
+        int size = listOfBrushes.get(countForBrush) + 5;
         layoutForSize.setImageDrawable(getResources().getDrawable(R.drawable.circle));
         layoutForSize.setLayoutParams(new RelativeLayout.LayoutParams(size, size));
-       // layoutForSize.setImageDrawable(getResources().getDrawable(listOfBrushImages.get(countForBrush)));
+        // layoutForSize.setImageDrawable(getResources().getDrawable(listOfBrushImages.get(countForBrush)));
 
     }
 
@@ -535,7 +480,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     }
 
-    @SuppressLint("NewApi")
+  /*  @SuppressLint("NewApi")
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -549,17 +494,51 @@ public class MainActivity extends Activity implements OnClickListener {
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
-    }
+    }*/
 
     @Override
     protected void onPause() {
         super.onPause();
         if (!exit) {
-            startActivity(getIntent().addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+            System.out.println("Onpause called without exit");
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+
+
+           /* Intent i = new Intent(this, MainActivity.class);
+            i.setAction(Intent.ACTION_MAIN);
+            i.addCategory(Intent.CATEGORY_LAUNCHER);
+            startActivity(i);*/
+            //startActivity(getIntent().addFlags(0|Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
-
+            System.out.println("Onpause called with exit");
         }
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // TODO Auto-generated method stub
 
+        super.onSaveInstanceState(outState);
     }
 
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        Log.d("Focus debug", "Focus changed !");
+
+        if(!hasFocus) {
+            Log.d("Focus debug", "Lost focus !");
+
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
+
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("On resume called");
+    }
 }
