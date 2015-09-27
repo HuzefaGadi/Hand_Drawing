@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Hand Drawing</string>
+    <string name="app_name">BabyCanDraw</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-
+    <string name="important_instructions">Important! When you enter the app, it will ask you to set the default homepage choose \'<b>BabyCanDraw</b>\' then choose \'<b>Always</b>\' to disable the home keys. \n\nWhen you exit the app,set the default to your normal homepage setting and choose always.</string>
+    <string name="volume_up"><u>Volume Up:</u></string>
+    <string name="volume_down"><u>Volume Down:</u></string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>

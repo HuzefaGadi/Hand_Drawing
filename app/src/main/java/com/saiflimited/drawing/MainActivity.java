@@ -7,6 +7,7 @@ import android.app.KeyguardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity {
 
     private final String tag = "MainActivity";
     int currentApiVersion;
@@ -76,6 +77,13 @@ public class MainActivity extends Activity implements OnClickListener {
     ImageView topLogo;
     boolean longPress = false;
 
+    RelativeLayout top, bottom;
+    Button getStarted;
+    SharedPreferences sharedPreferences;
+    boolean fromButton = false;
+    WindowManager manager;
+    customViewGroup view;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,9 +91,10 @@ public class MainActivity extends Activity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        sharedPreferences = getSharedPreferences("MYAPP", MODE_PRIVATE);
 
         if (savedInstanceState == null) {
+
 
             listOfColors = new ArrayList<String>();
             listOfColors.add("#000000");
@@ -142,7 +151,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     }
                 });
             }*/
-            WindowManager manager = ((WindowManager) getApplicationContext()
+            manager = ((WindowManager) getApplicationContext()
                     .getSystemService(Context.WINDOW_SERVICE));
 
             WindowManager.LayoutParams localLayoutParams = new WindowManager.LayoutParams();
@@ -161,7 +170,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     .getDisplayMetrics().scaledDensity);
             localLayoutParams.format = PixelFormat.TRANSPARENT;
 
-            customViewGroup view = new customViewGroup(this);
+             view = new customViewGroup(this);
 
             WindowManager.LayoutParams localLayoutParamsForRightSide = new WindowManager.LayoutParams();
             localLayoutParamsForRightSide.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
@@ -181,7 +190,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
             customViewGroup viewForRight = new customViewGroup(this);
 
-              manager.addView(view, localLayoutParams);
+            manager.addView(view, localLayoutParams);
+
             //manager.addView(viewForRight,localLayoutParamsForRightSide);
 
             KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Activity.KEYGUARD_SERVICE);
@@ -223,8 +233,41 @@ public class MainActivity extends Activity implements OnClickListener {
             });
             drawingView = (DrawingView) findViewById(R.id.drawing);
 
-
             canvasBitmap = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888);
+            top = (RelativeLayout) findViewById(R.id.layoutforfirstscreen);
+            bottom = (RelativeLayout) findViewById(R.id.layoutforsecondscreen);
+
+            if (!sharedPreferences.getBoolean("openedbefore", false)) {
+
+                top.setVisibility(View.VISIBLE);
+                bottom.setVisibility(View.GONE);
+
+
+            }
+            getStarted = (Button) findViewById(R.id.button);
+            getStarted.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    getPackageManager().clearPackagePreferredActivities(getPackageName());
+                    // top.setVisibility(View.GONE);
+                    //bottom.setVisibility(View.VISIBLE);
+                    fromButton = true;
+
+
+                    sharedPreferences.edit().putBoolean("openedbefore", true).commit();
+                   // startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    finish();
+                    Intent selector = new Intent(Intent.ACTION_MAIN);
+                    selector.addCategory(Intent.CATEGORY_HOME);
+                    //    selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    sharedPreferences.edit().putBoolean("openedbefore", true).commit();
+                    startActivity(selector);
+                }
+            });
+
+
+
 
         }
 
@@ -240,59 +283,11 @@ public class MainActivity extends Activity implements OnClickListener {
 //	}
 
 
-    @Override
-    public void onClick(View v) {
-
-        if (v == eraser) {
-
-            if (drawingView.isEraserActive()) {
-
-                drawingView.deactivateEraser();
-
-                eraser.setImageResource(R.drawable.eraser);
-
-            } else {
-
-                drawingView.activateEraser();
-
-                eraser.setImageResource(R.drawable.pencil);
-            }
-
-        } else if (v == btnClear) {
-
-            drawingView.reset();
-            drawingView.setBackground(null);
-
-        } else if (v == btnSave) {
-
-            saveImage();
-
-        } else if (v == btnCamera) {
-
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(cameraIntent, CAMERA_REQUEST);
-
-        } else if (v == btnShare) {
-
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.setType("image/png");
-
-            share.putExtra(Intent.EXTRA_STREAM, Uri.parse(saveImage().getAbsolutePath())); //"file:///sdcard/temporary_file.jpg"
-            startActivity(Intent.createChooser(share, "Share Image"));
-
-        } else if (v == btnChooseImage) {
-
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-            photoPickerIntent.setType("image/*");
-            startActivityForResult(photoPickerIntent, SELECT_PHOTO);
-
-        }
-
-    }
-
     public void exitApp() {
         exit = true;
         getPackageManager().clearPackagePreferredActivities(getPackageName());
+        sharedPreferences.edit().putBoolean("openedbefore", false).commit();
+        manager.removeView(view);
         finish();
     }
 
@@ -499,7 +494,11 @@ public class MainActivity extends Activity implements OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        if (!exit) {
+        if(fromButton)
+        {
+            System.out.println("Onpause called with from button");
+        }
+        else if (!exit) {
             System.out.println("Onpause called without exit");
             Intent intent = getIntent();
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -511,10 +510,11 @@ public class MainActivity extends Activity implements OnClickListener {
             i.addCategory(Intent.CATEGORY_LAUNCHER);
             startActivity(i);*/
             //startActivity(getIntent().addFlags(0|Intent.FLAG_ACTIVITY_NEW_TASK));
-        } else {
+        }  else {
             System.out.println("Onpause called with exit");
         }
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // TODO Auto-generated method stub
@@ -527,7 +527,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         Log.d("Focus debug", "Focus changed !");
 
-        if(!hasFocus) {
+        if (!hasFocus) {
             Log.d("Focus debug", "Lost focus !");
 
             Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
@@ -540,5 +540,11 @@ public class MainActivity extends Activity implements OnClickListener {
     protected void onResume() {
         super.onResume();
         System.out.println("On resume called");
+
+        if (sharedPreferences.getBoolean("openedbefore", false)) {
+
+            top.setVisibility(View.GONE);
+            bottom.setVisibility(View.VISIBLE);
+        }
     }
 }
