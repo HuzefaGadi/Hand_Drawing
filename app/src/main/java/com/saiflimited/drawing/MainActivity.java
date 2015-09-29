@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         sharedPreferences = getSharedPreferences("MYAPP", MODE_PRIVATE);
-
+      //  startLockTask();
         if (savedInstanceState == null) {
 
 
@@ -244,6 +244,11 @@ public class MainActivity extends Activity {
 
 
             }
+            else {
+
+                top.setVisibility(View.GONE);
+                bottom.setVisibility(View.VISIBLE);
+            }
             getStarted = (Button) findViewById(R.id.button);
             getStarted.setOnClickListener(new View.OnClickListener() {
 
@@ -257,12 +262,17 @@ public class MainActivity extends Activity {
 
                     sharedPreferences.edit().putBoolean("openedbefore", true).commit();
                    // startActivity(new Intent(MainActivity.this, MainActivity.class));
-                    finish();
+                   // finish();
                     Intent selector = new Intent(Intent.ACTION_MAIN);
                     selector.addCategory(Intent.CATEGORY_HOME);
-                    //    selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    sharedPreferences.edit().putBoolean("openedbefore", true).commit();
+                    selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(selector);
+                    if (sharedPreferences.getBoolean("openedbefore", false)) {
+
+                        top.setVisibility(View.GONE);
+                        bottom.setVisibility(View.VISIBLE);
+                    }
+
                 }
             });
 
@@ -494,11 +504,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(fromButton)
-        {
-            System.out.println("Onpause called with from button");
-        }
-        else if (!exit) {
+       if (!exit) {
             System.out.println("Onpause called without exit");
             Intent intent = getIntent();
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -541,10 +547,6 @@ public class MainActivity extends Activity {
         super.onResume();
         System.out.println("On resume called");
 
-        if (sharedPreferences.getBoolean("openedbefore", false)) {
 
-            top.setVisibility(View.GONE);
-            bottom.setVisibility(View.VISIBLE);
-        }
     }
 }
