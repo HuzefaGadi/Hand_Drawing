@@ -83,6 +83,8 @@ public class MainActivity extends Activity {
     boolean fromButton = false;
     WindowManager manager;
     customViewGroup view;
+    int countOfDisplays = 0;
+    boolean calledForFirstTime = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +94,7 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         sharedPreferences = getSharedPreferences("MYAPP", MODE_PRIVATE);
+
       //  startLockTask();
         if (savedInstanceState == null) {
 
@@ -265,13 +268,14 @@ public class MainActivity extends Activity {
                    // finish();
                     Intent selector = new Intent(Intent.ACTION_MAIN);
                     selector.addCategory(Intent.CATEGORY_HOME);
-                    selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(selector);
                     if (sharedPreferences.getBoolean("openedbefore", false)) {
 
                         top.setVisibility(View.GONE);
                         bottom.setVisibility(View.VISIBLE);
                     }
+                    calledForFirstTime = true;
 
                 }
             });
@@ -505,10 +509,32 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
        if (!exit) {
-            System.out.println("Onpause called without exit");
-            Intent intent = getIntent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
+           System.out.println("Onpause called without exit and count of displays "+countOfDisplays);
+           if(countOfDisplays > 0)
+           {
+               countOfDisplays = 0;
+               if(calledForFirstTime)
+               {
+                   Intent intent = getIntent();
+                   intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                   countOfDisplays++;
+                   calledForFirstTime = false;
+                   startActivity(intent);
+               }
+
+
+           }
+           else
+           {
+               Intent intent = getIntent();
+               intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+               countOfDisplays++;
+               startActivity(intent);
+              // calledForFirstTime=false;
+           }
+
+
+          // onWindowFocusChanged(false);
 
 
            /* Intent i = new Intent(this, MainActivity.class);
