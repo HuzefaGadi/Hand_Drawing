@@ -1,7 +1,7 @@
+
 package com.saiflimited.drawing;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.ContentValues;
@@ -9,38 +9,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,7 +86,7 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         sharedPreferences = getSharedPreferences("MYAPP", MODE_PRIVATE);
 
-      //  startLockTask();
+        //  startLockTask();
         if (savedInstanceState == null) {
 
 
@@ -134,18 +125,14 @@ public class MainActivity extends Activity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
             // This work only for android 4.4+
             if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
-
                 getWindow().getDecorView().setSystemUiVisibility(flags);
-
                 // Code below is to handle presses of Volume up or Volume down.
                 // Without this, after pressing volume buttons, the navigation bar will
                 // show up and won't hide
                 final View decorView = getWindow().getDecorView();
                 decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-
                     @Override
                     public void onSystemUiVisibilityChange(int visibility) {
                         if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
@@ -173,12 +160,12 @@ public class MainActivity extends Activity {
                     .getDisplayMetrics().scaledDensity);
             localLayoutParams.format = PixelFormat.TRANSPARENT;
 
-             view = new customViewGroup(this);
+            view = new customViewGroup(this);
 
-            WindowManager.LayoutParams localLayoutParamsForRightSide = new WindowManager.LayoutParams();
-            localLayoutParamsForRightSide.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
-            localLayoutParamsForRightSide.gravity = Gravity.RIGHT;
-            localLayoutParamsForRightSide.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+            WindowManager.LayoutParams localLayoutParamsForBottomSide = new WindowManager.LayoutParams();
+            localLayoutParamsForBottomSide.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
+            localLayoutParamsForBottomSide.gravity = Gravity.BOTTOM;
+            localLayoutParamsForBottomSide.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
 
                     // this is to enable the notification to recieve touch events
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
@@ -186,16 +173,16 @@ public class MainActivity extends Activity {
                     // Draws over status bar
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
 
-            localLayoutParamsForRightSide.width = (int) (20 * getResources()
+            localLayoutParamsForBottomSide.width = WindowManager.LayoutParams.MATCH_PARENT;
+            localLayoutParamsForBottomSide.height = (int) (20 * getResources()
                     .getDisplayMetrics().scaledDensity);
-            localLayoutParamsForRightSide.height = WindowManager.LayoutParams.MATCH_PARENT;
-            localLayoutParamsForRightSide.format = PixelFormat.TRANSPARENT;
+            localLayoutParamsForBottomSide.format = PixelFormat.OPAQUE;
 
             customViewGroup viewForRight = new customViewGroup(this);
 
             manager.addView(view, localLayoutParams);
 
-            //manager.addView(viewForRight,localLayoutParamsForRightSide);
+            //manager.addView(viewForRight,localLayoutParamsForBottomSide);
 
             KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Activity.KEYGUARD_SERVICE);
             KeyguardManager.KeyguardLock lock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE);
@@ -246,8 +233,7 @@ public class MainActivity extends Activity {
                 bottom.setVisibility(View.GONE);
 
 
-            }
-            else {
+            } else {
 
                 top.setVisibility(View.GONE);
                 bottom.setVisibility(View.VISIBLE);
@@ -264,8 +250,8 @@ public class MainActivity extends Activity {
 
 
                     sharedPreferences.edit().putBoolean("openedbefore", true).commit();
-                   // startActivity(new Intent(MainActivity.this, MainActivity.class));
-                   // finish();
+                    // startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    // finish();
                     Intent selector = new Intent(Intent.ACTION_MAIN);
                     selector.addCategory(Intent.CATEGORY_HOME);
                     selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -279,8 +265,6 @@ public class MainActivity extends Activity {
 
                 }
             });
-
-
 
 
         }
@@ -493,7 +477,6 @@ public class MainActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-
         if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -508,33 +491,29 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-       if (!exit) {
-           System.out.println("Onpause called without exit and count of displays "+countOfDisplays);
-           if(countOfDisplays > 0)
-           {
-               countOfDisplays = 0;
-               if(calledForFirstTime)
-               {
-                   Intent intent = getIntent();
-                   intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                   countOfDisplays++;
-                   calledForFirstTime = false;
-                   startActivity(intent);
-               }
+        if (!exit) {
+            System.out.println("Onpause called without exit and count of displays " + countOfDisplays);
+            if (countOfDisplays > 0) {
+                countOfDisplays = 0;
+                if (calledForFirstTime) {
+                    Intent intent = getIntent();
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    countOfDisplays++;
+                    calledForFirstTime = false;
+                    startActivity(intent);
+                }
 
 
-           }
-           else
-           {
-               Intent intent = getIntent();
-               intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-               countOfDisplays++;
-               startActivity(intent);
-              // calledForFirstTime=false;
-           }
+            } else {
+                Intent intent = getIntent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                countOfDisplays++;
+                startActivity(intent);
+                // calledForFirstTime=false;
+            }
 
 
-          // onWindowFocusChanged(false);
+            // onWindowFocusChanged(false);
 
 
            /* Intent i = new Intent(this, MainActivity.class);
@@ -542,7 +521,7 @@ public class MainActivity extends Activity {
             i.addCategory(Intent.CATEGORY_LAUNCHER);
             startActivity(i);*/
             //startActivity(getIntent().addFlags(0|Intent.FLAG_ACTIVITY_NEW_TASK));
-        }  else {
+        } else {
             System.out.println("Onpause called with exit");
         }
     }
@@ -574,5 +553,33 @@ public class MainActivity extends Activity {
         System.out.println("On resume called");
 
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (!exit) {
+
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
+            System.out.println("OnStop called without exit and count of displays " + countOfDisplays);
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            // calledForFirstTime=false;
+
+
+            // onWindowFocusChanged(false);
+
+
+           /* Intent i = new Intent(this, MainActivity.class);
+            i.setAction(Intent.ACTION_MAIN);
+            i.addCategory(Intent.CATEGORY_LAUNCHER);
+            startActivity(i);*/
+            //startActivity(getIntent().addFlags(0|Intent.FLAG_ACTIVITY_NEW_TASK));
+        } else {
+            System.out.println("On Stop called with EXIT");
+        }
     }
 }
