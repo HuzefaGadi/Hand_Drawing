@@ -27,7 +27,7 @@
             <intent-filter>
                 <category android:name="android.intent.category.HOME" />
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.ASSIST"/>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
